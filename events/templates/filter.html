@@ -21,7 +21,7 @@
 
 
     <div class="rounded-lg bg-white shadow-xl mt-4 mb-4 max-w-sm overflow-hidden border border-gray-200 p-5 mx-auto">
-      <div class="h-48 relative bg-gradient-to-r from-blue-500 to-blue-900 max-w-sm mb-3">
+      <div class="h-48 bg-cover relative max-w-sm mb-3" style="background-image: url('{{event.asset.url}}');">
         <span class="rounded-xl px-2 py-1 bg-white text-blue-600 absolute top-4 right-4">{{ event.category }}</span>
         <div class="absolute bottom-4 left-4">
           <span class="text-white font-semibold text-xl block">{{ event.date | date:"d" }}</span>

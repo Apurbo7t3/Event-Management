@@ -1,0 +1,119 @@
+{% extends "participant_nav.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+     <link rel="stylesheet" href="{% static 'css/output.css' %}">
+
+</head>
+
+{% block home_content %}
+
+<body>
+    <h1 class="p-5 text-3xl font-semibold mb-5">Filter by {{title}}</h1>
+     <div class="flex flex-wrap">
+
+
+    {% for event in events %}
+
+
+    <div class="rounded-lg bg-white shadow-xl mt-4 mb-4 max-w-sm overflow-hidden border border-gray-200 p-5 mx-auto">
+      <div class="h-48 relative bg-cover max-w-sm mb-3"
+      style="background-image: url('{{event.asset.url}}');">
+        <span class="rounded-xl px-2 py-1 bg-white text-blue-600 absolute top-4 right-4">{{ event.category }}</span>
+        <div class="absolute bottom-4 left-4">
+          <span class="text-white font-semibold text-xl block">{{ event.date | date:"d" }}</span>
+          <span class="text-white me-2">{{ event.date | date:"F" }}</span><span class="text-white">{{ event.date | date:"Y" }}</span>
+        </div>
+      </div>
+      <div class="text-2xl font-semibold mb-2">{{ event.name }}</div>
+      <p class="mb-3 max-w-sm">{{ event.description }}</p>
+      <div class="flex justify-between max-w-sm rounded-lg">
+        <div>
+          <div class="flex gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+            </svg>
+            <span>Location</span>
+          </div>
+          <p>{{ event.location }}</p>
+        </div>
+        <div>
+          <div class="flex gap-3">
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+              </svg>
+            </span>
+            <span>Participent</span>
+          </div>
+          <p class="text-center">{{ event.total_participants }}</p>
+        </div>
+      </div>
+        <div class="text-center my-6">
+            <div class="flex gap-4 justify-center">
+                {% if request.user not in event.participants.all %}
+                    <form action="{% url 'rsvp' request.user.id event.id  %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="p-2 bg-gradient-to-r from-blue-500 to-blue-900 text-white font-semibold rounded-lg mb-2">RSVP</button>
+                    </form>
+                    {% else %}
+                    <button class="p-2 border-2 border-blue-600 text-blue-600 font-semibold rounded-lg mb-2">Booked!</button>
+                    {% endif %}
+                    <label for="event-{{event.id}}" class="p-2 bg-gradient-to-r from-blue-500 to-blue-900 text-white font-semibold rounded-lg mb-2 cursor-pointer">
+                        Details
+                    </label>
+            </div>
+            <input type="checkbox" id="event-{{event.id}}" class="hidden peer" />
+            <div class="fixed inset-0 bg-black bg-opacity-70 hidden peer-checked:flex justify-center items-center z-50">
+                <div class="bg-white relative rounded-lg p-6 w-96 shadow-lg max-h-[80vh] overflow-y-auto">
+
+
+                   <label for="event-{{event.id}}" class="">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                      stroke-width="2" stroke="currentColor" class="size-8 cursor-pointer text-blue-700 w-10 h-10 rounded-full absolute right-4 top-4 hover:bg-blue-100">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                      </svg>
+                    </label>
+
+
+
+                    <h2 class="text-xl font-semibold mt-5 mb-4">{{event.name}}</h2>
+                    <p class="mb-4">{{ event.description }}</p>
+                    <p class="mb-4 font-medium text-start"> Participents</p>
+                    <div class="text-start">
+                    {% for participent in event.participants.all %}
+                      <li>{{participent.name}}</li>
+                    {% endfor %}
+                    </div>
+                     <div class="flex mt-3 gap-3">
+                      <div class="text-start"><p class="font-medium">Location</p><P>{{event.location}}</P></div>
+                      <div><p class="font-medium">Participent</p><p>{{event.total_participants}}</p></div>
+                    </div>
+
+                    <div class="flex mt-3 justify-between mb-4">
+                      <div class="text-start"><p class="font-medium">Date</p><P>{{event.date}}</P></div>
+                      <div><p class="font-medium">time</p><p>{{event.time}}</p></div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+    {% if not events %}
+
+            <div class="mx-auto my-auto">
+                <h1 class="text-3xl font-semibold text-blue-600 text-center m-8 mb-8 p-8">NO Events Found!!</h1>
+            </div>
+          
+        {% endif %}
+  </div>
+</body>
+{% endblock home_content %}
+</html>

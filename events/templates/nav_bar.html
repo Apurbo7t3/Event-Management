@@ -104,6 +104,7 @@
                         {% if request.user.groups.first.name  == 'Admin' or request.user.is_superuser %}
                             <a href="{% url 'participant-page' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">Participants</p></a>
                             <a href="{% url 'group-page' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">Groups</p></a>
+                            <a href="{% url 'create-group' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">Create Groups</p></a>
                             <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
                             <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
                         {% elif request.user.groups.first.name == 'Organizer' %}
@@ -207,6 +208,7 @@
                         {% if request.user.groups.first.name == 'Admin'  %}
                             <a href="{% url 'participant-page' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">Participants</p></a>
                             <a href="{% url 'group-page' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">Groups</p></a>
+                            <a href="{% url 'create-group' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">Create Groups</p></a>
                             <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
                             <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
                         {% elif request.user.groups.first.name == 'Organizer' %}

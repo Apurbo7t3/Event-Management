@@ -1,15 +1,28 @@
 from django.shortcuts import render,redirect
-from events.forms import CategoryModelForm,ParticipantModelForm,EventModelForm
-from events.models import Category,Event,Participant
+from events.forms import CategoryModelForm,EventModelForm,ParticipantModelForm,GroupCreationForm
+from events.models import Category,Event
 from django.db.models import Count,Q
 import datetime
+from django.contrib.auth import login,logout
 from django.contrib import messages
+from django.contrib.auth.models import User,Group
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.decorators import login_required,permission_required,user_passes_test
 # Create your views here.
-
+def is_admin(user):
+    return user.groups.filter(name='Admin').exists() or user.is_superuser
+def is_organizer(user):
+    return user.groups.filter(name='Organizer').exists()
+def is_participant(user):
+    return user.groups.filter(name='Participant').exists()
+def both(user):
+    return is_admin(user) or is_organizer(user)
+@login_required
+@user_passes_test(both,login_url='no-access')
 def home(request):
     past_events=Event.objects.filter(date__lt=datetime.date.today()).annotate(total_participants=Count('participants'))
     nearest_event = Event.objects.filter(date__gte=datetime.date.today()).order_by('date').first()
-    nearest_count=nearest_event.participants.count()
+    nearest_count = nearest_event.participants.count() if nearest_event else 0
     categories=Category.objects.all()
     context={
         'past_events':past_events,
@@ -19,7 +32,8 @@ def home(request):
     }
     return render(request,'home.html',context)
 
-
+@login_required
+@user_passes_test(both,login_url='no-access')
 def category_filter(request,id):
     c=Category.objects.get(id=id)
     events=Event.objects.filter(category=c).annotate(total_participants=Count('participants'))
@@ -31,6 +45,8 @@ def category_filter(request,id):
     }
     return render(request,'filter.html',context)
 
+@login_required
+@user_passes_test(both,login_url='no-access')
 def search_filter(request):
     result=request.GET.get('res')
     events=Event.objects.filter(name__icontains=result).annotate(total_participants=Count('participants'))
@@ -45,9 +61,10 @@ def search_filter(request):
 
 
 
-
+@login_required
+@user_passes_test(both,login_url='no-access')
 def dashboard(request):
-    total_participant=Participant.objects.filter(events__isnull=False).count()
+    total_participant=User.objects.filter(events__isnull=False).count()
     events = Event.objects.select_related("category").prefetch_related("participants").annotate(
         total=Count('participants')
     ).all()
@@ -105,7 +122,8 @@ def dashboard(request):
 
 
 
-
+@login_required
+@user_passes_test(both,login_url='no-access')
 def create_category(request):
     if request.method == 'POST':
         categor=CategoryModelForm(request.POST)
@@ -125,10 +143,11 @@ def create_category(request):
 
 
 
-
+@login_required
+@user_passes_test(both,login_url='no-access')
 def create_event(request):
     if request.method == 'POST':
-        event=EventModelForm(request.POST)
+        event=EventModelForm(request.POST,request.FILES)
         if event.is_valid():
             event.save()
             messages.success(request,'Event Created Successfully!!')
@@ -141,16 +160,31 @@ def create_event(request):
         'type':'Event'
     }
     return render(request,'form.html',context)
+@login_required
+@user_passes_test(is_admin,login_url='no-access')
+def group_page(request):
+    groups=Group.objects.all()
+    return render(request,'group.html',{'groups': groups})
 
-
+@login_required
+@user_passes_test(is_admin,login_url='no-access')
+def delete_group(request,grp_id):
+    if request.method=="POST":
+        group=Group.objects.get(id=grp_id)
+        group.delete()
+        messages.success(request,'Group deleted Successfully!!')
+        return redirect('group-page')
 
 def create_participant(request):
     if request.method == 'POST':
-        participant=ParticipantModelForm(request.POST)
-        if participant.is_valid():
-            participant.save()
-            messages.success(request,'Participant Created Successfully!!')
-            return redirect('create-participant')
+        form=ParticipantModelForm(request.POST)
+        if form.is_valid():
+            user=form.save(commit=False)
+            user.is_active=False
+            user.set_password(form.cleaned_data.get('password'))
+            user.save()
+            messages.success(request,'Account Created Successfully!! Check your mail for Activate your account')
+            return redirect('login-page')
         else:
             messages.success(request,'Something went Wrong!!')
             return redirect('create-participant')
@@ -160,7 +194,61 @@ def create_participant(request):
     }
     return render(request,'form.html',context)
 
+@login_required
+@user_passes_test(is_admin,login_url='no-access')
+def show_participant(request):
+    participants=User.objects.all()
+    groups=Group.objects.all()
+    return render(request,'participants.html',{'participants':participants,'groups':groups})
 
+
+@login_required
+@user_passes_test(is_admin,login_url='no-access')
+def delete_participant(request,user_id):
+    if request.method=='POST':
+        user=User.objects.get(id=user_id)
+        user.delete()
+        messages.success(request,'Participant Deleted Successfully!')
+        return redirect('participant-page')
+@login_required
+@user_passes_test(is_admin,login_url='no-access')   
+def update_participant(request,user_id):
+    if request.method=='POST':
+        user=User.objects.get(id=user_id)
+        grp_id=request.POST.get('group')
+        if grp_id:
+            
+            grp=Group.objects.get(id=grp_id)
+            user.groups.clear()
+            user.groups.add(grp)
+            user.save()
+            messages.success(request,'Role updated Successfully')
+            return redirect('participant-page')
+        else:
+            messages.success(request,'Something Wrong! Try again')
+            return redirect('participant-page')
+@login_required
+@user_passes_test(is_admin,login_url='no-access')
+def create_group(request):
+    if request.method=='POST':
+        form=GroupCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request,'Group Created Successfully!!')
+            return redirect('create-group')
+    
+    context={
+        'form':GroupCreationForm,
+        'type':'Group'
+    }
+    return render(request,'form.html',context)
+
+
+
+
+
+@login_required
+@user_passes_test(both,login_url='no-access')
 def update_event(request,id):
     e=Event.objects.get(id=id)
     if request.method == 'POST':
@@ -175,11 +263,35 @@ def update_event(request,id):
     }
     return render(request,'form.html',context)
 
+
+@login_required
+@user_passes_test(both,login_url='no-access')
 def delete_event(request,id):
     e=Event.objects.get(id=id)
     if request.method == 'POST':
         e.delete()
         messages.success(request,'Event deleted Successfully')
-        return redirect('create-event')
+        return redirect('dashboard')
     else:
-        return redirect('home')
+        return redirect('dashboard')
+@login_required
+@user_passes_test(is_participant,login_url='no-access')   
+def event_rsvp(request,user_id,event_id):
+    if request.method=='POST':
+        user=User.objects.get(id=user_id)
+        event=Event.objects.get(id=event_id)
+        user.events.add(event)
+        return redirect('participant-home')
+    
+def account_activate(request,user_id,token):
+    try:
+        user=User.objects.get(id=user_id)
+        if default_token_generator.check_token(user,token):
+            user.is_active=True
+            user.save()
+            messages.success(request,'Activation complete now you can login')
+            return redirect('login-page')
+        else:
+            return redirect('no-access')
+    except User.DoesNotExist:
+        return redirect('no-access')

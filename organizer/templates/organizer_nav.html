@@ -101,26 +101,14 @@
                     </label>
                     <div class="hidden absolute p-5 right-0 divide-y divide-gray-300 peer-checked:block
                         bg-white text-black min-w-max rounded-lg shadow-xl">
-                        {% if request.user.groups.first.name  == 'Admin' or request.user.is_superuser %}
-                            <a href="{% url 'participant-page' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">Participants</p></a>
-                            <a href="{% url 'group-page' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">Groups</p></a>
-                            <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
-                            <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
-                        {% elif request.user.groups.first.name == 'Organizer' %}
-                            <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
-                            <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
-                        {% endif %}
-
-
+                        <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
+                        <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
                         <form action="{% url 'sign-out' %}" method="POST" class="ml-4">
                             {% csrf_token %}
                             <button type="submit" class="font-semibold hover:text-blue-700">Logout</button>
                         </form>
                     </div>
                 </div>
-
-
-
             </div>
 
 
@@ -198,21 +186,14 @@
                     <input type="checkbox" id="sm-new" class="peer hidden" />
                     <label for="sm-new" class="inline-flex gap-2 items-center font-semibold hover:text-white hover:bg-blue-600
                      hover:cursor-pointer border-2 rounded-lg border-blue-500 bg-white text-black p-3 ">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                        </svg>
+                    </svg>
                     </label>
                     <div class="hidden absolute p-5 right-0 divide-y divide-gray-300 peer-checked:block
                         bg-white text-black min-w-max rounded-lg shadow-xl">
-                        {% if request.user.groups.first.name == 'Admin'  %}
-                            <a href="{% url 'participant-page' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">Participants</p></a>
-                            <a href="{% url 'group-page' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">Groups</p></a>
-                            <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
-                            <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
-                        {% elif request.user.groups.first.name == 'Organizer' %}
-                            <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
-                            <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
-                        {% endif %}
+                        <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
+                        <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
                         <form action="{% url 'sign-out' %}" method="POST" class="ml-4">
                             {% csrf_token %}
                             <button type="submit" class="font-semibold hover:text-blue-700">Logout</button>

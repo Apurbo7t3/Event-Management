@@ -12,7 +12,7 @@
     <header>
         <nav class=" rounded-md shadow-md bg-white p-4 flex justify-between">
 
-            <!-- right side -->
+            <!-- left side -->
             <a href="{% url 'home' %}">
             <div class="flex gap-2 items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-8 text-blue-600">
@@ -30,7 +30,7 @@
            
             
 
-            <div class="hidden gap-4 items-center lg:flex">
+            <!-- <div class="hidden gap-4 items-center lg:flex">
 
                 <div class="border rounded-lg p-3 border-gray-400 focus-within:border-blue-500 focus-within:border-2">
                     <form action="{% url 'search' %}" class="flex">
@@ -53,12 +53,12 @@
                     </label>
                     <div class="hidden absolute p-5 divide-y divide-gray-300 peer-checked:block
                         bg-white text-black min-w-max rounded-lg shadow-xl z-50">
-                        {% for category in categories %}
-                            <a href="{% url 'category-filter' category.id %}">
+
+                            <a href="">
                                 <p class="hover:text-blue-700 hover:cursor-pointer p-2">{{ category.name }}</p>
                             </a>
                           
-                        {% endfor %}
+
                     </div>
                 </div>
 
@@ -93,7 +93,7 @@
 
                 <div class="relative group">
                     <input type="checkbox" id="new" class="peer hidden" />
-                    <label for="new" class="inline-flex gap-2 w-10 h-10 p-2 items-center font-semibold hover:text-black hover:bg-gray-400
+                    <label for="new" class="inline-flex gap-2 w-10 h-10 items-center font-semibold hover:text-black hover:bg-gray-400
                      hover:cursor-pointer rounded-full bg-white text-black ">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -101,31 +101,19 @@
                     </label>
                     <div class="hidden absolute p-5 right-0 divide-y divide-gray-300 peer-checked:block
                         bg-white text-black min-w-max rounded-lg shadow-xl">
-                        {% if request.user.groups.first.name  == 'Admin' or request.user.is_superuser %}
-                            <a href="{% url 'participant-page' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">Participants</p></a>
-                            <a href="{% url 'group-page' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">Groups</p></a>
-                            <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
-                            <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
-                        {% elif request.user.groups.first.name == 'Organizer' %}
-                            <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
-                            <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
-                        {% endif %}
-
-
-                        <form action="{% url 'sign-out' %}" method="POST" class="ml-4">
-                            {% csrf_token %}
-                            <button type="submit" class="font-semibold hover:text-blue-700">Logout</button>
-                        </form>
+                        <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
+                        <a href="{% url 'create-participant' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Participent</p></a>
+                        <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
                     </div>
                 </div>
 
 
 
-            </div>
+            </div> -->
 
 
 
-            <div class="lg:hidden">
+            <!-- <div class="lg:hidden">
                 <div>
                    <input type="checkbox" id="menu" class="peer hidden" />
                    <label for="menu" class="inline-flex items-center p-2 cursor-pointer border rounded-lg bg-white">
@@ -151,7 +139,7 @@
                     </form>
                 </div>
 
-                <a href="{% url 'home' %}">
+                <a href="">
                 <div class="flex gap-2 items-center font-semibold hover:text-blue-700 hover:cursor-pointer">
                     <span>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -163,7 +151,7 @@
                 </a>
 
                 
-                <a href="{% url 'dashboard' %}">
+                <a href="">
                 <div class="flex gap-2 items-center font-semibold hover:text-blue-700 hover:cursor-pointer">
                     <span>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -185,11 +173,10 @@
                     </label>
                    <div class="hidden absolute p-5 divide-y divide-gray-300 peer-checked:block
                         bg-white text-black min-w-max rounded-lg shadow-xl z-50">
-                        {% for category in categories %}
-                            <a href="{% url 'category-filter' category.id %}">
+                            <a href="">
                                 <p class="hover:text-blue-700 hover:cursor-pointer p-2">{{ category.name }}</p>
                             </a>
-                        {% endfor %}
+
                     </div>
                 </div>
 
@@ -199,24 +186,14 @@
                     <label for="sm-new" class="inline-flex gap-2 items-center font-semibold hover:text-white hover:bg-blue-600
                      hover:cursor-pointer border-2 rounded-lg border-blue-500 bg-white text-black p-3 ">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
-                    </label>
+                        New</label>
                     <div class="hidden absolute p-5 right-0 divide-y divide-gray-300 peer-checked:block
                         bg-white text-black min-w-max rounded-lg shadow-xl">
-                        {% if request.user.groups.first.name == 'Admin'  %}
-                            <a href="{% url 'participant-page' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">Participants</p></a>
-                            <a href="{% url 'group-page' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">Groups</p></a>
-                            <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
-                            <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
-                        {% elif request.user.groups.first.name == 'Organizer' %}
-                            <a href="{% url 'create-event' %}"><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
-                            <a href="{% url 'create-category' %}"><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
-                        {% endif %}
-                        <form action="{% url 'sign-out' %}" method="POST" class="ml-4">
-                            {% csrf_token %}
-                            <button type="submit" class="font-semibold hover:text-blue-700">Logout</button>
-                        </form>
+                        <a href=""><p class="p-2 hover:text-blue-600 hover hover:cursor-pointer">ADD Event</p></a>
+                        <a href=""><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Participent</p></a>
+                        <a href=""><p class="p-3 hover:text-blue-600 hover hover:cursor-pointer">ADD Category</p></a>
                     </div>
                 </div>
 
@@ -234,17 +211,44 @@
 
 
                 </div>
+            </div> -->
+
+            <div class="flex justify-center gap-3 items-center">
+                <a href="{% url 'login-page' %}" class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Sign In</a>
+                <a href="{% url 'create-participant' %}" class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Sign Up</a>
             </div>
-
-
 
 
         </nav>
     </header>
 
 
-    {% block home_content %}
-    {% endblock home_content %}
+    <div class="min-h-screen w-screen bg-gradient-to-r from-blue-500 to-blue-900 flex flex-col justify-center items-center text-center px-6 py-10">
+    <div>
+      <h1 class="text-5xl text-white font-bold">Manage Your Events Efficiently</h1>
+      <p class="text-xl text-blue-100 mt-8 mb-4 max-w-lg mx-auto">Create, organize, and manage events effortlessly with our powerful event management system.</p>
+      <p class="text-xl text-blue-100 mt-8 max-w-lg mx-auto">Login to your Account to Explore</p>
+      <p class="text-xl text-blue-100 mb-8 max-w-lg mx-auto">Don't have any Accout ? You can Create one!</p>
+    </div>
+    <div class="flex gap-6">
+      <a href="{% url 'create-participant' %}">
+      <button class="flex gap-3 items-center bg-white text-blue-700 rounded-lg hover:bg-blue-100 py-3 px-5 font-semibold">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        Create Account
+      </button>
+      </a>
+      <a href="{% url 'login-page' %}">
+      <button class="flex gap-3 items-center rounded-lg hover:bg-blue-600 bg-blue-800 text-white py-3 px-5 font-semibold">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+        Sign In
+      </button>
+      </a>
+    </div>
+
 
 </body>
 </html>

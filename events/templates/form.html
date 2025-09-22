@@ -8,7 +8,7 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="bg-gradient-to-t from-blue-500 to-blue-900 flex-col fixed inset-0 flex justify-center items-center">
+    <div class="bg-gradient-to-t from-blue-500 to-blue-900 min-h-screen flex flex-col justify-center items-center py-10">
 
 
          <!-- message    -->
@@ -27,7 +27,7 @@
 
 
 
-        <div class="bg-white p-6 rounded-xl relative shadow-lg shadow-black max-w-lg max-h-[80vh] overflow-y-auto">
+        <div class="bg-white p-6 rounded-xl relative shadow-lg shadow-black max-w-lg h-screen flex flex-col">
             <h1 class="text-2xl font-semibold text-blue-800 m-5">Create {{type}}</h1>
 
             <a href="{% url 'home' %}">
@@ -37,101 +37,22 @@
                 </svg>
             </a>
 
-
-            {% if type == 'Category' %}
-            <form method="POST">
+  
+            <form method="POST" class="flex flex-col flex-1 overflow-hidden" enctype="multipart/form-data">
                 {% csrf_token %}
-                <p class="mb-3">{{form.name.label}} :</p>
-                <div class="mb-3">
-                    {{form.name}}
-                </div>
-                <p class="mb-3">
-                    {{form.description.label}}
-                </p>
-                <div class="mb-4">
-                    {{form.description}}
+
+
+                <div class="flex-1 space-y-3 overflow-y-auto pr-2">
+                    {{ form.as_p }}
                 </div>
 
-                <button class="bg-gradient-to-t from-blue-500 mt-3 mb-4
-                 to-blue-900 text-white py-2 px-3 rounded-lg w-full"
-                 type="submit">Submit</button>
-            </form>
-
-            {% elif type == 'Participant' %}
-            <form method="POST">
-                {% csrf_token %}
-                <p class="mb-3">{{form.name.label}} :</p>
-                <div class="mb-3">
-                    {{form.name}}
-                </div>
-                <p class="mb-3">
-                    {{form.email.label}}
-                </p>
-                <div class="mb-4">
-                    {{form.email}}
-                </div>
-
-                <button class="bg-gradient-to-t from-blue-500 mt-3 mb-4
-                 to-blue-900 text-white py-2 px-3 rounded-lg w-full"
-                 type="submit">Submit</button>
-            </form>
-            
-            {% else %}
-            <form method="POST" >
-                {% csrf_token %}
-                <div class="overflow-y-auto">
-                <p class="mb-3">{{form.name.label}} :</p>
-                <div class="mb-3">
-                    {{form.name}}
-                </div>
-                <p class="mb-3">
-                    {{form.description.label}}
-                </p>
-                <div class="mb-4">
-                    {{form.description}}
-                </div>
-                <p class="mb-3">
-                    {{form.date.label}}
-                </p>
-                <div class="mb-4 flex gap-2">
-                    {{form.date}}
-                </div>
-                <p class="mb-3">
-                    {{form.time.label}}
-                </p>
-                <div class="mb-4">
-                    {{form.time}}
-                </div>
-                <p class="mb-3">
-                    {{form.location.label}}
-                </p>
-                <div class="mb-4">
-                    {{form.location}}
-                </div>
-                <p class="mb-3">
-                    {{form.category.label}}
-                </p>
-                <div class="mb-4">
-                    {{form.category}}
-                </div>
-                 <p class="mb-3">
-                    {{form.participants.label}}
-                </p>
-                <div class="mb-4">
-                    {{form.participants}}
-                </div>
-
-                </div>
-                
-
-                <div class="mb-4">
-                    <button class="bg-gradient-to-t from-blue-500 mt-3 mb-4
-                 to-blue-900 text-white py-2 px-3 rounded-lg w-full"
-                 type="submit">Submit</button>
+                <div class="mt-4">
+                    <button class="bg-gradient-to-t from-blue-500 to-blue-900 text-white py-2 px-3 rounded-lg w-full"
+                    type="submit">Submit</button>
                 </div>
             </form>
-            {% endif %}
         </div>
+
     </div>
 </body>
 </html>

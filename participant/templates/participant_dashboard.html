@@ -1,0 +1,93 @@
+{% extends "participant_nav.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+</head>
+<body>
+    
+
+
+{% block home_content %}
+  
+<div class="bg-gray-100 p-5">
+
+    
+    <h1 class="text-2xl mt-5 mb-5 font-semibold">{{ title }}</h1>
+
+    <!-- Todays events table -->
+
+    <div class="bg-white rounded-lg divide-y divide-gray-300 shadow-lg">
+
+        <!-- row 1 --> 
+
+        <div class="table-row-1 text-gray-400 text-xl font-semibold grid grid-cols-4 p-4">
+
+            <div>Event</div>
+            <div>Category</div>
+            <div>Participent</div>
+            <div>Time</div>
+
+        </div>
+
+        <!-- dyanamic row -->
+
+
+        {% for event in events %}
+          
+
+
+        <div class="table-row-2 text-lg  grid grid-cols-4 p-4">
+
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-red-400 rounded-full"></div>
+                <span>{{ event.name }}</span>
+            </div>
+
+
+            <div>
+                <span>{{ event.category }}</span>
+            </div>
+
+
+            <div>
+                <span>{{ event.total }}</span>
+            </div>
+
+
+            <div class="flex flex-col">
+                <span>{{ event.time }}</span>
+                <span>{{ event.date }}</span>
+            </div>
+
+            
+
+
+        </div>
+
+
+        {% endfor %}
+
+        {% if not events %}
+
+            <div>
+                <h1 class="text-3xl font-semibold text-center m-8 mb-8 p-8">NO Events Booked!!</h1>
+            </div>
+          
+        {% endif %}
+
+
+
+    </div>
+    
+
+   
+     
+</div>
+ {% endblock home_content %}
+ </body>
+</html>

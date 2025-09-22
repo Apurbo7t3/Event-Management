@@ -1,0 +1,42 @@
+{% extends "nav_bar.html" %}
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+</head>
+<body>
+    {% block home_content %}
+        <div class="bg-white divide divide-y-2 shadow-lg rounded-lg mx-auto p-6 w-2/3 mt-10">
+            {% if messages %}
+                <div class="bg-white rounded-lg p-4 m-5">
+            {% for message in messages %}
+
+                <h1 class="text-center font-semibold text-blue-600 p-2">{{ message }}</h1>
+              
+            {% endfor %}
+              </div>
+            {% endif %}
+            <div class="grid grid-cols-2 text-gray-500 font-semibold text-xl p-3">
+                <div><p>Name</p></div>
+                <div><p>Action</p></div>
+            </div>
+            {% for group in groups %}
+              <div class="grid grid-cols-2 text-gray-500 font-semibold text-xl p-3">
+                <div><p>{{group.name}}</p></div>
+                <div>
+                    <form action="{% url 'delete-group' group.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-red-500 text-white font-semibold rounded-lg p-2">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+                <p class="text-gray-500 mt-3 text-center p-3">No participants found.</p>
+            {% endfor %}
+        </div>
+    {% endblock home_content %}
+</body>
+</html>

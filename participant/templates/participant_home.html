@@ -1,4 +1,4 @@
-{% extends "nav_bar.html" %}
+{% extends "participant_nav.html" %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -13,28 +13,11 @@
     
   <div class="min-h-screen w-screen bg-gradient-to-r from-blue-500 to-blue-900 flex flex-col justify-center items-center text-center px-6 py-10">
     <div>
-      <h1 class="text-5xl text-white font-bold">Hello {{request.user.groups.first.name}}</h1>
+      <h1 class="text-5xl text-white mt-7 font-bold">Hello {{request.user.username}} ! </h1><br>
       <h1 class="text-5xl text-white font-bold">Manage Your Events Efficiently</h1>
       <p class="text-xl text-blue-100 mt-8 mb-8 max-w-lg mx-auto">Create, organize, and manage events effortlessly with our powerful event management system.</p>
     </div>
-    <div class="flex gap-6">
-      <a href="{% url 'create-event' %}">
-      <button class="flex gap-3 items-center bg-white text-blue-700 rounded-lg hover:bg-blue-100 py-3 px-5 font-semibold">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-        Create Event
-      </button>
-      </a>
-      <a href="{% url 'dashboard' %}">
-      <button class="flex gap-3 items-center rounded-lg hover:bg-blue-600 bg-blue-800 text-white py-3 px-5 font-semibold">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg>
-        Explore Events
-      </button>
-      </a>
-    </div>
+    
 
 
     <!--       Upcomming nearest event card     -->
@@ -60,9 +43,19 @@
           <p>{{ nearest_count }}</p>
         </div>
       </div>
-      <label for="nearest" class="p-2 w-full bg-gradient-to-r from-blue-500 to-blue-900 text-white font-semibold rounded-lg mb-2">
+      <div class="flex gap-4 justify-center">
+      {% if request.user not in nearest_event.participants.all %}
+        <form action="{% url 'rsvp' request.user.id nearest_event.id  %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="p-2 bg-gradient-to-r from-blue-500 to-blue-900 text-white font-semibold rounded-lg mb-2">RSVP</button>
+        </form>
+        {% else %}
+        <button class="p-2 border-2 border-blue-600 text-blue-600 font-semibold rounded-lg mb-2">Booked!</button>
+      {% endif %}
+      <label for="nearest" class="p-2 bg-gradient-to-r from-blue-500 to-blue-900 text-white font-semibold rounded-lg mb-2">
         Details
       </label>
+    </div>
       <input type="checkbox" id="nearest" class="hidden peer" />
             <div class="fixed inset-0 bg-black bg-opacity-70 hidden peer-checked:flex justify-center items-center z-50">
                 <div class="bg-white relative rounded-lg p-6 w-96 shadow-lg max-h-[80vh] overflow-y-auto">
@@ -92,19 +85,6 @@
                       <div><p class="font-medium">time</p><p>{{nearest_event.time}}</p></div>
                     </div>
 
-                    <div class="flex justify-end gap-3">
-                        <form action="{% url 'update-event' nearest_event.id %}">
-                    <button type="submit">
-                        <span class="bg-blue-600 text-white rounded-xl px-3 py-1">Update</span>
-                    </button>
-                    </form>
-                    <form action="{% url 'delete-event' nearest_event.id %}" method="POST">
-                      {% csrf_token %}
-                        <button type="submit">
-                            <span class="bg-red-500 text-white rounded-xl px-3 py-1">Delete</span>
-                        </button>
-                    </form>
-                    </div>
                 </div>
             </div>
     </div>
@@ -112,7 +92,7 @@
 
             
 
-  <h1 class="text-3xl font-semibold m-4 p-4">Our Past Events</h1>
+  <h1 class="text-3xl font-semibold m-4 p-4">Events</h1>
 
 
          <!--          cards          -->
@@ -125,7 +105,7 @@
 
     <div class="rounded-lg bg-white shadow-xl mt-4 mb-4 max-w-sm overflow-hidden border border-gray-200 p-5 mx-auto">
       <div class="h-48 relative bg-cover max-w-sm mb-3"
-        style="background-image: url('{{event.asset.url}}');">
+      style="background-image: url('{{event.asset.url}}');">
         <span class="rounded-xl px-2 py-1 bg-white text-blue-600 absolute top-4 right-4">{{ event.category }}</span>
         <div class="absolute bottom-4 left-4">
           <span class="text-white font-semibold text-xl block">{{ event.date | date:"d" }}</span>
@@ -158,9 +138,19 @@
         </div>
       </div>
         <div class="text-center my-6">
-            <label for="event-{{event.id}}" class="inline-block text-white bg-gradient-to-r from-blue-600 to-blue-900 rounded-lg px-6 py-3 cursor-pointer">
-                View Details
-            </label>
+            <div class="flex gap-4 justify-center">
+              {% if request.user not in event.participants.all %}
+                <form action="{% url 'rsvp' request.user.id event.id  %}" method="POST">
+                  {% csrf_token %}
+                  <button type="submit" class="p-2 bg-gradient-to-r from-blue-500 to-blue-900 text-white font-semibold rounded-lg mb-2">RSVP</button>
+                </form>
+                {% else %}
+                <button class="p-2 border-2 border-blue-600 text-blue-600 font-semibold rounded-lg mb-2">Booked!</button>
+                  {% endif %}
+                  <label for="event-{{event.id}}" class="p-2 bg-gradient-to-r from-blue-500 to-blue-900 text-white font-semibold rounded-lg mb-2">
+                    Details
+                  </label>
+            </div>
             <input type="checkbox" id="event-{{event.id}}" class="hidden peer" />
             <div class="fixed inset-0 bg-black bg-opacity-70 hidden peer-checked:flex justify-center items-center z-50">
                 <div class="bg-white relative rounded-lg p-6 w-96 shadow-lg max-h-[80vh] overflow-y-auto">
@@ -191,19 +181,6 @@
                     <div class="flex mt-3 justify-between mb-4">
                       <div class="text-start"><p class="font-medium">Date</p><P>{{event.date}}</P></div>
                       <div><p class="font-medium">time</p><p>{{event.time}}</p></div>
-                    </div>
-                    <div class="flex justify-end gap-3">
-                        <form action="{% url 'update-event' event.id %}">
-                    <button type="submit">
-                        <span class="bg-blue-600 text-white rounded-xl px-3 py-1">Update</span>
-                    </button>
-                    </form>
-                    <form action="{% url 'delete-event' event.id %}" method="POST">
-                      {% csrf_token %}
-                        <button type="submit">
-                            <span class="bg-red-500 text-white rounded-xl px-3 py-1">Delete</span>
-                        </button>
-                    </form>
                     </div>
                 </div>
             </div>

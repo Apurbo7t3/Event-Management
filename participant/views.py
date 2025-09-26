@@ -3,13 +3,12 @@ from events.forms import CategoryModelForm,EventModelForm,ParticipantModelForm,G
 from events.models import Category,Event
 from django.db.models import Count,Q
 import datetime
-from django.contrib.auth import login,logout
+from django.contrib.auth import login,logout,get_user_model
 from django.contrib import messages
-from django.contrib.auth.models import User
 from events.views import is_participant
 from django.contrib.auth.decorators import login_required,user_passes_test
-
-
+from django.views.generic import UpdateView
+User=get_user_model()
 
 @login_required
 @user_passes_test(is_participant,login_url='no-access')
@@ -65,3 +64,13 @@ def participant_dashboard(request, user_id):
         "selected_user": user,
     }
     return render(request, "participant_dashboard.html", context)
+
+
+def profile(request):
+    return render(request,'participant_profile.html')
+
+
+
+
+
+

@@ -1,7 +1,9 @@
 from django import forms
 from events.models import Category,Event
-from django.contrib.auth.models import User,Group,Permission
+from django.contrib.auth.models import Group,Permission
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import get_user_model
+User=get_user_model()
 class FormMixin:
     default_class = "border-2 border-gray-300- p-3 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-blue-500"
     def style(self):

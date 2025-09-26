@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from core.views import sign_in
+from core.views import sign_in,ProfileView
 from django.conf.urls.static import static
 from django.conf import settings
 urlpatterns = [
@@ -26,5 +26,6 @@ urlpatterns = [
     path('core/',include('core.urls')),
     path('organizer/',include('organizer.urls')),
     path('participant/',include('participant.urls')),
+    path('profile/',ProfileView.as_view(),name='profile')
 ] 
 urlpatterns +=static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

@@ -3,11 +3,16 @@ from events.forms import CategoryModelForm,EventModelForm,ParticipantModelForm,G
 from events.models import Category,Event
 from django.db.models import Count,Q
 import datetime
+from django.urls import reverse_lazy
 from django.contrib.auth import login,logout
 from django.contrib import messages
-from django.contrib.auth.models import User,Group
+from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required,permission_required,user_passes_test
+from django.contrib.auth import get_user_model
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView,DetailView,UpdateView,CreateView
+User=get_user_model()
 # Create your views here.
 def is_admin(user):
     return user.groups.filter(name='Admin').exists() or user.is_superuser
@@ -32,6 +37,27 @@ def home(request):
     }
     return render(request,'home.html',context)
 
+
+
+both_access=[ login_required , user_passes_test(both,login_url='no-access')]
+@method_decorator(both_access,name='dispatch')
+class Home(TemplateView):
+    template_name='home.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        past_events=Event.objects.filter(date__lt=datetime.date.today()).annotate(total_participants=Count('participants'))
+        nearest_event = Event.objects.filter(date__gte=datetime.date.today()).order_by('date').first()
+        nearest_count = nearest_event.participants.count() if nearest_event else 0
+        categories=Category.objects.all()
+        context["past_events"] = past_events
+        context["nearest_event"] =nearest_event
+        context["nearest_count"] =nearest_count
+        context["categories"] =categories
+        return context
+    
+
+
+
 @login_required
 @user_passes_test(both,login_url='no-access')
 def category_filter(request,id):
@@ -44,6 +70,23 @@ def category_filter(request,id):
         'title':c.name
     }
     return render(request,'filter.html',context)
+
+
+
+@method_decorator(both_access,name='dispatch')
+class CategoryFilter(DetailView):
+    pk_url_kwarg='id'
+    model=Category
+    template_name='filter.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        events=Event.objects.filter(category=self.object).annotate(total_participants=Count('participants'))
+        categories=Category.objects.all()
+        context["events"] = events
+        context["categories"] = categories
+        context["title"] = self.object.name
+        return context
+    
 
 @login_required
 @user_passes_test(both,login_url='no-access')
@@ -58,6 +101,23 @@ def search_filter(request):
     }
     return render(request,'filter.html',context)
 
+
+@method_decorator(both_access, name='dispatch')
+class SearchFilter(TemplateView):
+    template_name = 'filter.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        result = self.request.GET.get('res','')
+        events = Event.objects.filter(name__icontains=result).annotate(
+            total_participants=Count('participants')
+        )
+        categories = Category.objects.all()
+        context['events'] = events
+        context['categories'] = categories
+        context['title'] = 'Search Result'
+        return context
+    
 
 
 
@@ -140,8 +200,22 @@ def create_category(request):
     }
     return render(request,'form.html',context)
 
+@method_decorator(both_access, name='dispatch')
+class CreateCategory(CreateView):
+    model = Category
+    form_class = CategoryModelForm
+    template_name = 'form.html'
+    success_url = reverse_lazy('create-category')
 
-
+    def form_valid(self, form):
+        messages.success(self.request, 'Category Created Successfully!!')
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['type'] = 'Category'
+        return context
+    
 
 @login_required
 @user_passes_test(both,login_url='no-access')
@@ -160,6 +234,27 @@ def create_event(request):
         'type':'Event'
     }
     return render(request,'form.html',context)
+
+
+
+@method_decorator(both_access, name='dispatch')
+class CreateEvent(CreateView):
+    model = Event
+    form_class = EventModelForm
+    template_name = 'form.html'
+    success_url = reverse_lazy('create-event')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Event Created Successfully!!')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['type'] = 'Event'
+        return context
+
+
+
 @login_required
 @user_passes_test(is_admin,login_url='no-access')
 def group_page(request):

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen m-0 bg-blue-500 flex flex-col justify-center items-center p-6">
+  
+  {% if messages %}
+    <div class="p-6 mb-4 bg-white rounded-lg shadow-lg w-full max-w-lg">
+      {% for msg in messages %}
+        <p class="text-xl">{{ msg }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if form.non_field_errors %}
+    <div class="p-6 mb-4 bg-white rounded-lg shadow-lg w-full max-w-lg">
+      {% for msg in form.non_field_errors %}
+        <p class="text-xl">{{ msg }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="p-8 bg-white rounded-lg shadow-lg w-full max-w-lg">
+    <form action="" method="POST" enctype="multipart/form-data" class="space-y-4">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="bg-blue-500 hover:bg-blue-600 text-white font-medium p-3 rounded-lg w-full transition">
+        Submit
+      </button>
+    </form>
+  </div>
+
+</body>
+</html>

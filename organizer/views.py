@@ -5,7 +5,8 @@ from django.db.models import Count,Q
 import datetime
 from django.contrib.auth import login,logout
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+User=get_user_model()
 # Create your views here.
 # Create your views here.
 from events.views import both

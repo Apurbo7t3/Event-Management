@@ -1,8 +1,9 @@
 from django.urls import path
-from events.views import Home,CategoryFilter,SearchFilter,CreateCategory,CreateEvent,home,dashboard,event_rsvp,account_activate,group_page,delete_group,show_participant,update_participant,delete_participant,create_category,create_event,create_participant,category_filter,search_filter,update_event,delete_event,create_group
+from events.views import Home,CategoryFilter,SearchFilter,CreateCategory,CreateEvent,Home,dashboard,event_rsvp,account_activate,group_page,delete_group,show_participant,update_participant,delete_participant,create_category,create_event,create_participant,category_filter,search_filter,update_event,delete_event,create_group
 urlpatterns = [
     # path('home/',home,name='home'),
-    path('home/',Home.as_view(),name='home'),
+    # path('home/',Home.as_view(),name='home'),
+     path('home/', Home, name='home'),
     path('dashboard/',dashboard,name='dashboard'),
     # path('create-category/',create_category,name='create-category'),
     path('create-category/',CreateCategory.as_view(),name='create-category'),

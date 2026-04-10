@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import dj_database_url
+from  decouple import config
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-86s0$4kk)n^6#47^nneiwd8q-7ymw0dkf-omng(8-*6(0^tyv('
+SECRET_KEY = config('secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -83,10 +84,11 @@ WSGI_APPLICATION = 'event_management.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         # Replace this value with your local database's connection string.
-        default='postgresql://event_management_s99d_user:QrWC1VEJHX4vJ1Z1jBTfq1XxP2E0pJMO@dpg-d3bdvs6mcj7s73er0qm0-a.oregon-postgres.render.com/event_management_s99d',
+        default=config('default'),
         conn_max_age=600
     )
 }
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -143,13 +145,13 @@ STATICFILES_DIRS=[
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-FRONTEND_URL='https://event-management-qi8r.onrender.com'
-# FRONTEND_URL='http://127.0.0.1:8000'
+# FRONTEND_URL='https://event-management-qi8r.onrender.com'
+FRONTEND_URL=config('FRONTEND_URL')
 MEDIA_URL='/media/'
 MEDIA_ROOT=BASE_DIR/'media'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER ='abc.software.io@gmail.com'
-EMAIL_HOST_PASSWORD ='umpk dwfr bfqe jfro'
+EMAIL_HOST_USER =config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD =config('EMAIL_HOST_PASSWORD')

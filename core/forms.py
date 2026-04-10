@@ -44,3 +44,5 @@ class PassResetConfirmForm(FormMixin,SetPasswordForm):
     def __init__(self,*args, **kwargs):
         super().__init__(*args, **kwargs)
         self.style()
+        for field in self.fields.values():
+            field.help_text = None  

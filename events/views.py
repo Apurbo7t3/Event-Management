@@ -22,38 +22,44 @@ def is_participant(user):
     return user.groups.filter(name='Participant').exists()
 def both(user):
     return is_admin(user) or is_organizer(user)
+
+
 @login_required
-@user_passes_test(both,login_url='no-access')
-def home(request):
-    past_events=Event.objects.filter(date__lt=datetime.date.today()).annotate(total_participants=Count('participants'))
+@user_passes_test(both, login_url='no-access')
+def Home(request):
+    all_events = Event.objects.all().annotate(total_participants=Count('participants'))
+    
     nearest_event = Event.objects.filter(date__gte=datetime.date.today()).order_by('date').first()
     nearest_count = nearest_event.participants.count() if nearest_event else 0
-    categories=Category.objects.all()
-    context={
-        'past_events':past_events,
-        'nearest_event':nearest_event,
-        'nearest_count':nearest_count,
-        'categories':categories,
+    
+    categories = Category.objects.all()
+    
+    context = {
+        'past_events': all_events, 
+        'nearest_event': nearest_event,
+        'nearest_count': nearest_count,
+        'categories': categories,
     }
-    return render(request,'home.html',context)
+    
+    return render(request, 'home.html', context)
 
 
 
 both_access=[ login_required , user_passes_test(both,login_url='no-access')]
-@method_decorator(both_access,name='dispatch')
-class Home(TemplateView):
-    template_name='home.html'
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        past_events=Event.objects.filter(date__lt=datetime.date.today()).annotate(total_participants=Count('participants'))
-        nearest_event = Event.objects.filter(date__gte=datetime.date.today()).order_by('date').first()
-        nearest_count = nearest_event.participants.count() if nearest_event else 0
-        categories=Category.objects.all()
-        context["past_events"] = past_events
-        context["nearest_event"] =nearest_event
-        context["nearest_count"] =nearest_count
-        context["categories"] =categories
-        return context
+# @method_decorator(both_access,name='dispatch')
+# class Home(TemplateView):
+#     template_name='home.html'
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         past_events=Event.objects.filter(date__lt=datetime.date.today()).annotate(total_participants=Count('participants'))
+#         nearest_event = Event.objects.filter(date__gte=datetime.date.today()).order_by('date').first()
+#         nearest_count = nearest_event.participants.count() if nearest_event else 0
+#         categories=Category.objects.all()
+#         context["past_events"] = past_events
+#         context["nearest_event"] =nearest_event
+#         context["nearest_count"] =nearest_count
+#         context["categories"] =categories
+#         return context
     
 
 
@@ -369,12 +375,14 @@ def delete_event(request,id):
         return redirect('dashboard')
     else:
         return redirect('dashboard')
+
+
 @login_required
-@user_passes_test(is_participant,login_url='no-access')   
-def event_rsvp(request,user_id,event_id):
-    if request.method=='POST':
-        user=User.objects.get(id=user_id)
-        event=Event.objects.get(id=event_id)
+@user_passes_test(is_participant, login_url='no-access')
+def event_rsvp(request, user_id, event_id):
+    if request.method == 'POST':
+        user = User.objects.get(id=user_id)
+        event = Event.objects.get(id=event_id)
         user.events.add(event)
         return redirect('participant-home')
     

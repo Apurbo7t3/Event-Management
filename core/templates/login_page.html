@@ -1,48 +1,116 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/output.css' %}">
-    <title>Document</title>
+    <title>Sign In - Event Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="">
-    <div class="min-h-screen w-screen bg-gradient-to-r from-blue-500 to-blue-900 flex flex-col justify-center items-center text-center">
-        
-        <div class="bg-white rounded-xl shadow-xl relative w-1/3 h-full p-5">
-            
-            <a href="{% url 'sign-in' %}">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
-                    stroke-width="1.5" stroke="currentColor" 
-                    class="absolute top-4 right-4 size-6 hover:text-blue-600 cursor-pointer">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+
+<body class="bg-gray-100">
+
+    <!-- Header nav -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-3">
+            <a href="{% url 'sign-in' %}" class="flex items-center gap-2 w-fit">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="size-7 text-blue-600">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z" />
                 </svg>
+                <span class="text-xl font-semibold text-blue-600">Event Management</span>
             </a>
+        </div>
+    </header>
 
+    <!-- Login Section -->
+    <div class="min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="max-w-md w-full bg-white rounded-lg shadow-md">
+            <!-- Card Header -->
+            <div class="bg-blue-600 text-white rounded-t-lg px-6 py-4 h-20">
+                <h2 class="text-4xl font-semibold text-center">Account Login</h2>
+            </div>
 
+            <!-- Messages -->
             {% if messages %}
-                <div class="bg-white rounded-lg p-4 m-5">
-            {% for message in messages %}
-
-                <h1 class="text-center font-semibold text-blue-600 p-2">{{ message }}</h1>
-              
-            {% endfor %}
-              </div>
+            <div class="px-6 pt-4">
+                {% for message in messages %}
+                <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded text-sm">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
             {% endif %}
 
+            {% if form.non_field_errors %}
+            <div class="px-6 pt-4">
+                {% for error in form.non_field_errors %}
+                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded text-sm">
+                    {{ error }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 
-            <h1 class="font-semibold text-3xl text-blue-500 text-center">
-                Account Login
-            </h1>
-            <form action="{% url 'login-page' %}" method="POST" class="space-y-3">
+            <!-- Form -->
+            <form action="{% url 'login-page' %}" method="POST" class="p-6 space-y-4">
                 {% csrf_token %}
-                {{form.as_p}}
-                <button type="submit" class="bg-blue-600 text-white rounded-xl px-2 py-1">
+
+                {% for field in form %}
+                <div>
+                    <label class="block text-gray-700 text-sm font-medium mb-1">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
                     Log In
                 </button>
+
+                <div class="text-center text-sm">
+                    <a href="{% url 'password-reset' %}" class="text-blue-600 hover:underline">
+                        Forgot Password?
+                    </a>
+                </div>
             </form>
+
+            <!-- Footer Link -->
+            <div class="border-t px-6 py-4 text-center text-sm text-gray-600">
+                Don't have an account?
+                <a href="{% url 'create-participant' %}" class="text-blue-600 hover:underline">
+                    Create Account
+                </a>
+            </div>
         </div>
     </div>
+
+    <style>
+        /* styling */
+        input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            ring: 2px solid #3b82f6;
+        }
+    </style>
+
 </body>
+
 </html>

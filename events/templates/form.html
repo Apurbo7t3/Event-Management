@@ -1,58 +1,207 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/output.css' %}">
-    <title>Document</title>
+    <title>{% if type %}{{ type }}{% else %}Form{% endif %} - Event Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        input[type="file"] {
+            padding: 6px;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .errorlist {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        /* Permission grid styling */
+        .permissions-grid {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background-color: #f9fafb;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background-color: white;
+            border-radius: 0.375rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .permission-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .permission-item input {
+            width: auto;
+            margin: 0;
+        }
+
+        .permission-item label {
+            margin: 0;
+            font-size: 0.875rem;
+            cursor: pointer;
+            flex: 1;
+        }
+    </style>
 </head>
-<body>
-    <div class="bg-gradient-to-t from-blue-500 to-blue-900 min-h-screen flex flex-col justify-center items-center py-10">
 
+<body class="bg-gray-100">
 
-         <!-- message    -->
-
-        
-            {% if messages %}
-                <div class="bg-white rounded-lg p-4 m-5">
-            {% for message in messages %}
-
-                <h1 class="text-center font-semibold text-blue-600 p-2">{{ message }}</h1>
-              
-            {% endfor %}
-              </div>
-            {% endif %}
-        
-
-
-
-        <div class="bg-white p-6 rounded-xl relative shadow-lg shadow-black max-w-lg h-screen flex flex-col">
-            <h1 class="text-2xl font-semibold text-blue-800 m-5">Create {{type}}</h1>
-
-            <a href="{% url 'home' %}">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
-                stroke-width="2" stroke="currentColor" class="size-6 absolute right-4 top-4 hover:text-blue-600">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    <!-- Simple Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-3">
+            <a href="{% if request.user.is_authenticated %}{% url 'login-page' %}{% else %}{% url 'sign-in' %}{% endif %}"
+                class="flex items-center gap-2 w-fit">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="size-7 text-blue-600">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z" />
                 </svg>
+                <span class="text-xl font-semibold text-blue-600">EventHub</span>
             </a>
+        </div>
+    </header>
 
-  
-            <form method="POST" class="flex flex-col flex-1 overflow-hidden" enctype="multipart/form-data">
+    <!-- Form Section -->
+    <div class="min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="max-w-2xl w-full bg-white rounded-lg shadow-md">
+            <!-- Card Header -->
+            <div class="bg-blue-600 text-white rounded-t-lg px-6 py-4">
+                <h2 class="text-xl font-semibold text-center">
+                    {% if type == 'Participant' %}
+                    Create Account
+                    {% elif type == 'Event' %}
+                    Create Event
+                    {% elif type == 'Category' %}
+                    Create Category
+                    {% elif type == 'Group' %}
+                    Create Group
+                    {% else %}
+                    {{ type }}
+                    {% endif %}
+                </h2>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+            <div class="px-6 pt-4">
+                {% for message in messages %}
+                <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-2 rounded text-sm">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if form.non_field_errors %}
+            <div class="px-6 pt-4">
+                {% for error in form.non_field_errors %}
+                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded text-sm">
+                    {{ error }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Form -->
+            <form method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
                 {% csrf_token %}
 
+                {% for field in form %}
+                <div>
+                    <label class="block text-gray-700 text-sm font-medium mb-1">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                        <span class="text-red-500">*</span>
+                        {% endif %}
+                    </label>
 
-                <div class="flex-1 space-y-3 overflow-y-auto pr-2">
-                    {{ form.as_p }}
-                </div>
+                    <!-- Special handling for permissions field -->
+                    {% if field.name == 'permissions' %}
+                    <div class="permissions-grid">
+                        {{ field }}
+                    </div>
+                    {% else %}
+                    {{ field }}
+                    {% endif %}
 
-                <div class="mt-4">
-                    <button class="bg-gradient-to-t from-blue-500 to-blue-900 text-white py-2 px-3 rounded-lg w-full"
-                    type="submit">Submit</button>
+                    {% if field.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>
+                    {% endif %}
+                    {% if field.help_text %}
+                    <p class="text-gray-500 text-xs mt-1">{{ field.help_text }}</p>
+                    {% endif %}
                 </div>
+                {% endfor %}
+
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition">
+                    {% if type == 'Participant' %}
+                    Create Account
+                    {% elif type == 'Event' %}
+                    Create Event
+                    {% elif type == 'Category' %}
+                    Create Category
+                    {% elif type == 'Group' %}
+                    Create Group
+                    {% else %}
+                    Submit
+                    {% endif %}
+                </button>
+
+                <!-- Only show sign in link for Participant registration -->
+                {% if type == 'Participant' %}
+                <div class="text-center text-sm">
+                    <span class="text-gray-600">Already have an account?</span>
+                    <a href="{% url 'login-page' %}" class="text-blue-600 hover:underline ml-1">
+                        Sign In
+                    </a>
+                </div>
+                {% endif %}
             </form>
         </div>
-
     </div>
+
 </body>
+
 </html>

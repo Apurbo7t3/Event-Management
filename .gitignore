@@ -1,6 +1,7 @@
 __pycache/
 .vscode/
 env/
+.env
 node_modules/
 populate_db.py
 __pycache__/

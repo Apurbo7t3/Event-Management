@@ -99,7 +99,13 @@ class GroupCreationForm(FormMixin,forms.ModelForm):
         model= Group
         fields= ['name','permissions']
     
-    def __init__(self,*args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.style()
+        self.fields['name'].widget.attrs.update({
+            'class': 'w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500'
+        })
+        self.fields['permissions'].widget.attrs.update({
+            'class': 'w-full px-3 py-2'
+        })
+
 

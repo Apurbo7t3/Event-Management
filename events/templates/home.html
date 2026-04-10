@@ -1,219 +1,559 @@
-{% extends "nav_bar.html" %}
-{% load static %}
-<!DOCTYPE html>
+{% extends "nav_bar.html" %} {% load static %}
+
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'css/output.css' %}">
-  <title>Document</title>
-</head>
-<body>
-  {% block home_content %}
-    
-  <div class="min-h-screen w-screen bg-gradient-to-r from-blue-500 to-blue-900 flex flex-col justify-center items-center text-center px-6 py-10">
-    <div>
-      <h1 class="text-5xl text-white font-bold">Hello {{request.user.groups.first.name}}</h1>
-      <h1 class="text-5xl text-white font-bold">Manage Your Events Efficiently</h1>
-      <p class="text-xl text-blue-100 mt-8 mb-8 max-w-lg mx-auto">Create, organize, and manage events effortlessly with our powerful event management system.</p>
-    </div>
-    <div class="flex gap-6">
-      <a href="{% url 'create-event' %}">
-      <button class="flex gap-3 items-center bg-white text-blue-700 rounded-lg hover:bg-blue-100 py-3 px-5 font-semibold">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-        Create Event
-      </button>
-      </a>
-      <a href="{% url 'dashboard' %}">
-      <button class="flex gap-3 items-center rounded-lg hover:bg-blue-600 bg-blue-800 text-white py-3 px-5 font-semibold">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg>
-        Explore Events
-      </button>
-      </a>
-    </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Event Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
 
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-    <!--       Upcomming nearest event card     -->
+      .animate-fadeInUp {
+        animation: fadeInUp 0.6s ease-out forwards;
+      }
 
+      .delay-1 {
+        animation-delay: 0.1s;
+      }
 
-    <div class="bg-white rounded-lg shadow-2xl shadow-black p-5 my-20">
-      <h1 class="font-semibold text-2xl mb-3">Nearest Event</h1>
-      <div class="p-2 bg-gradient-to-r from-blue-500 to-blue-900 text-white font-semibold rounded-lg mb-2">
-        <h1>{{ nearest_event.name }}</h1>
+      .delay-2 {
+        animation-delay: 0.2s;
+      }
+
+      .delay-3 {
+        animation-delay: 0.3s;
+      }
+
+      .delay-4 {
+        animation-delay: 0.4s;
+      }
+
+      .hover-scale {
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      .hover-scale:hover {
+        transform: translateY(-5px);
+        box-shadow:
+          0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+    </style>
+  </head>
+
+  <body>
+    {% block home_content %}
+
+    <!-- Welcome Section -->
+    <div class="bg-blue-200 border-b border-blue-100 py-6">
+      <div class="container mx-auto px-4">
+        <h1 class="text-2xl font-semibold text-gray-800">
+          Hello, {{ request.user.get_full_name|default:request.user.username }}!
+        </h1>
+        <p class="text-gray-600 mt-1">
+          Manage users, events, and everything in between
+        </p>
       </div>
-      <p class="mb-3 text-gray-700">
-        <span class="font-medium mr-2">{{ nearest_event.date }}</span>
-        <span class="font-medium">{{ nearest_event.time }}</span>
-      </p>
+    </div>
 
-      <div class="flex justify-between gap-8 mb-4">
-        <div>
-          <p>Location</p>
-          <p>{{ nearest_event.location }}</p>
-        </div>
-        <div>
-          <p>Total Participent</p>
-          <p>{{ nearest_count }}</p>
-        </div>
+    <div class="container mx-auto px-4 py-6">
+      <!-- Admin Quick Actions -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <a
+          href="{% url 'create-event' %}"
+          class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition text-center"
+        >
+          <svg
+            class="w-10 h-10 text-md text-blue-600 mx-auto mb-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            ></path>
+          </svg>
+          <h3 class="font-semibold text-gray-800">Create Event</h3>
+          <p class="text-sm text-gray-500">Add new event</p>
+        </a>
+        <a
+          href="{% url 'create-category' %}"
+          class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition text-center"
+        >
+          <svg
+            class="w-10 h-10 text-blue-600 mx-auto mb-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l5 5a2 2 0 01.586 1.414V19a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z"
+            ></path>
+          </svg>
+          <h3 class="font-semibold text-gray-800">Add Category</h3>
+          <p class="text-sm text-gray-500">Create categories</p>
+        </a>
+        <a
+          href="{% url 'participant-page' %}"
+          class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition text-center"
+        >
+          <svg
+            class="w-10 h-10 text-blue-600 mx-auto mb-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+            ></path>
+          </svg>
+          <h3 class="font-semibold text-gray-800">Manage Users</h3>
+          <p class="text-sm text-gray-500">View all participants</p>
+        </a>
+        <a
+          href="{% url 'group-page' %}"
+          class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition text-center"
+        >
+          <svg
+            class="w-10 h-10 text-blue-600 mx-auto mb-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+            ></path>
+          </svg>
+          <h3 class="font-semibold text-gray-800">Manage Roles</h3>
+          <p class="text-sm text-gray-500">User groups</p>
+        </a>
       </div>
-      <label for="nearest" class="p-2 w-full bg-gradient-to-r from-blue-500 to-blue-900 text-white font-semibold rounded-lg mb-2">
-        Details
-      </label>
-      <input type="checkbox" id="nearest" class="hidden peer" />
-            <div class="fixed inset-0 bg-black bg-opacity-70 hidden peer-checked:flex justify-center items-center z-50">
-                <div class="bg-white relative rounded-lg p-6 w-96 shadow-lg max-h-[80vh] overflow-y-auto">
-                    
-                    <label for="nearest" class="">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
-                      stroke-width="2" stroke="currentColor" class="size-8 cursor-pointer text-blue-700 w-10 h-10 rounded-full absolute right-4 top-4 hover:bg-blue-100">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                      </svg>
-                    </label>
-                    
-                    <h2 class="text-xl font-semibold mt-5 mb-4">{{ nearest_event.name }}</h2>
-                    <p class="mb-4">{{ nearest_event.description }}</p>
-                    <p class="mb-4 font-medium text-start">Participents :</p>
-                    <div class="text-start">
-                      {% for p in nearest_event.participants.all %}
-                        <li>{{p.name}}</li>
-                      {% endfor %}
-                    </div>
-                    <div class="flex mt-3 gap-3">
-                      <div class="text-start"><p class="font-medium">Location</p><P>{{nearest_event.location}}</P></div>
-                      <div><p class="font-medium">Participent</p><p>{{nearest_count}}</p></div>
-                    </div>
 
-                    <div class="flex mt-3 justify-between mb-4">
-                      <div class="text-start"><p class="font-medium">Date</p><P>{{nearest_event.date}}</P></div>
-                      <div><p class="font-medium">time</p><p>{{nearest_event.time}}</p></div>
-                    </div>
-
-                    <div class="flex justify-end gap-3">
-                        <form action="{% url 'update-event' nearest_event.id %}">
-                    <button type="submit">
-                        <span class="bg-blue-600 text-white rounded-xl px-3 py-1">Update</span>
-                    </button>
-                    </form>
-                    <form action="{% url 'delete-event' nearest_event.id %}" method="POST">
-                      {% csrf_token %}
-                        <button type="submit">
-                            <span class="bg-red-500 text-white rounded-xl px-3 py-1">Delete</span>
-                        </button>
-                    </form>
-                    </div>
-                </div>
+      <!-- Nearest Event -->
+      {% if nearest_event %}
+      <div
+        class="bg-white rounded-lg border border-gray-200 mb-8 overflow-hidden shadow-lg"
+      >
+        <div class="bg-white px-4 py-2 border-b border-gray-200">
+          <h2 class="text-lg font-medium text-gray-700">⭐ Featured Event</h2>
+        </div>
+        <div class="p-4">
+          <div class="flex flex-col md:flex-row gap-4">
+            {% if nearest_event.asset %}
+            <div class="md:w-1/4">
+              <img
+                src="{{ nearest_event.asset.url }}"
+                alt="{{ nearest_event.name }}"
+                class="w-full h-32 object-cover rounded"
+              />
             </div>
-    </div>
-  </div>
-
-            
-
-  <h1 class="text-3xl font-semibold m-4 p-4">Our Past Events</h1>
-
-
-         <!--          cards          -->
-
-  <div class="flex flex-wrap">
-
-
-    {% for event in past_events %}
-
-
-    <div class="rounded-lg bg-white shadow-xl mt-4 mb-4 max-w-sm overflow-hidden border border-gray-200 p-5 mx-auto">
-      <div class="h-48 relative bg-cover max-w-sm mb-3"
-        style="background-image: url('{{event.asset.url}}');">
-        <span class="rounded-xl px-2 py-1 bg-white text-blue-600 absolute top-4 right-4">{{ event.category }}</span>
-        <div class="absolute bottom-4 left-4">
-          <span class="text-white font-semibold text-xl block">{{ event.date | date:"d" }}</span>
-          <span class="text-white me-2">{{ event.date | date:"F" }}</span><span class="text-white">{{ event.date | date:"Y" }}</span>
+            {% endif %}
+            <div class="md:w-3/4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-800">
+                    {{ nearest_event.name }}
+                  </h3>
+                  <p class="text-sm text-gray-500 mt-1">
+                    {{ nearest_event.category.name }}
+                  </p>
+                </div>
+                <div class="flex gap-2">
+                  <a
+                    href="{% url 'update-event' nearest_event.id %}"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-3 py-1.5 rounded"
+                  >
+                    Edit
+                  </a>
+                  <form
+                    action="{% url 'delete-event' nearest_event.id %}"
+                    method="POST"
+                    class="inline"
+                  >
+                    {% csrf_token %}
+                    <button
+                      type="submit"
+                      class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1.5 rounded"
+                      onclick="return confirm('Delete this event?');"
+                    >
+                      Delete
+                    </button>
+                  </form>
+                </div>
+              </div>
+              <p class="text-gray-600 text-sm mt-2">
+                {{ nearest_event.description|truncatechars:120 }}
+              </p>
+              <div class="flex flex-wrap gap-4 mt-3 text-xs text-gray-500">
+                <span class="inline-flex items-center gap-1">
+                  <svg
+                    class="w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    ></path>
+                  </svg>
+                  {{ nearest_event.date }}
+                </span>
+                <span class="inline-flex items-center gap-1">
+                  <svg
+                    class="w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                  {{ nearest_event.time }}
+                </span>
+                <span class="inline-flex items-center gap-1">
+                  <svg
+                    class="w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                  </svg>
+                  {{ nearest_event.location }}
+                </span>
+                <span class="inline-flex items-center gap-1">
+                  <svg
+                    class="w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                    ></path>
+                  </svg>
+                  {{ nearest_event.participants.count }} participants
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="text-2xl font-semibold mb-2">{{ event.name }}</div>
-      <p class="mb-3 max-w-sm">{{ event.description }}</p>
-      <div class="flex justify-between max-w-sm rounded-lg">
-        <div>
-          <div class="flex gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+      {% endif %}
+
+      <!-- Events Grid -->
+      <div>
+        <h2 class="text-xl font-bold text-gray-800 mb-5">
+          All Events ({{ past_events|length }} events)
+        </h2>
+
+        {% if past_events %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for event in past_events %}
+          <div
+            class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full"
+          >
+            {% if event.asset %}
+            <div class="h-48 overflow-hidden">
+              <img
+                src="{{ event.asset.url }}"
+                alt="{{ event.name }}"
+                class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            {% endif %}
+            <div class="p-5 flex flex-col flex-1">
+              <div class="flex justify-between items-start gap-2 mb-2">
+                <h3 class="font-bold text-gray-800 text-lg leading-tight">
+                  {{ event.name|truncatechars:40 }}
+                </h3>
+                <span
+                  class="bg-purple-100 text-purple-700 text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap"
+                >
+                  {{ event.category.name }}</span
+                >
+              </div>
+              <div
+                class="space-y-2 text-sm text-gray-600 mt-2 flex flex-col flex-1"
+              >
+                <div class="flex items-center gap-2">
+                  <svg
+                    class="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    ></path>
+                  </svg>
+                  <span>{{ event.date }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <svg
+                    class="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                  <span>{{ event.time }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <svg
+                    class="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                  </svg>
+                  <span class="truncate"
+                    >{{ event.location|truncatechars:30 }}</span
+                  >
+                </div>
+                <div class="flex items-center gap-2">
+                  <svg
+                    class="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                    ></path>
+                  </svg>
+                  <span>{{ event.participants.count }} participants</span>
+                </div>
+              </div>
+              <div
+                class="mt-5 pt-3 border-t border-gray-100 grid grid-cols-3 gap-2"
+              >
+                <a
+                  href="{% url 'update-event' event.id %}"
+                  class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium py-2 rounded-lg text-center transition-colors"
+                >
+                  Edit
+                </a>
+                <form
+                  action="{% url 'delete-event' event.id %}"
+                  method="POST"
+                  class="inline"
+                >
+                  {% csrf_token %}
+                  <button
+                    type="submit"
+                    class="w-full bg-red-500 hover:bg-red-600 text-white text-xs font-medium py-2 rounded-lg transition-colors"
+                    onclick="return confirm('Delete this event?');"
+                  >
+                    Delete
+                  </button>
+                </form>
+                <button
+                  onclick="openModal('{{ event.id }}', '{{ event.name|escapejs }}', '{{ event.description|escapejs }}', '{{ event.date }}', '{{ event.time }}', '{{ event.location }}', '{{ event.category.name }}', '{{ event.participants.count }}', '{{ event.asset.url }}')"
+                  class="border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-medium py-2 rounded-lg transition-colors"
+                >
+                  Details
+                </button>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div
+          class="bg-white rounded-xl border border-gray-200 p-12 text-center"
+        >
+          <p class="text-gray-500">
+            No events available.
+            <a
+              href="{% url 'create-event' %}"
+              class="text-purple-600 hover:underline font-medium"
+              >Create your first event</a
+            >
+          </p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Modal for Event Details -->
+    <div
+      id="eventModal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="flex justify-between items-center border-b px-4 py-3">
+          <h3 id="modalTitle" class="font-semibold text-gray-800">
+            Event Details
+          </h3>
+          <button
+            onclick="closeModal()"
+            class="text-gray-400 hover:text-gray-600"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
             </svg>
-            <span>Location</span>
-          </div>
-          <p>{{ event.location }}</p>
+          </button>
         </div>
-        <div>
-          <div class="flex gap-3">
-            <span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-              </svg>
-            </span>
-            <span>Participent</span>
+        <div class="p-4">
+          <img
+            id="modalImage"
+            src=""
+            alt=""
+            class="w-full h-40 object-cover rounded mb-3"
+          />
+          <p id="modalDesc" class="text-gray-600 text-sm mb-3"></p>
+          <div class="space-y-2 text-sm">
+            <div class="flex">
+              <span class="w-24 text-gray-500">Category:</span>
+              <span id="modalCategory" class="text-gray-700"></span>
+            </div>
+            <div class="flex">
+              <span class="w-24 text-gray-500">Date:</span>
+              <span id="modalDate" class="text-gray-700"></span>
+            </div>
+            <div class="flex">
+              <span class="w-24 text-gray-500">Time:</span>
+              <span id="modalTime" class="text-gray-700"></span>
+            </div>
+            <div class="flex">
+              <span class="w-24 text-gray-500">Location:</span>
+              <span id="modalLocation" class="text-gray-700"></span>
+            </div>
+            <div class="flex">
+              <span class="w-24 text-gray-500">Participants:</span>
+              <span id="modalAttendees" class="text-gray-700"></span>
+            </div>
           </div>
-          <p>{{ event.total_participants }}</p>
+        </div>
+        <div class="border-t px-4 py-3">
+          <button
+            onclick="closeModal()"
+            class="w-full bg-gray-100 hover:bg-blue-500 hover:text-white text-gray-700 py-2 rounded"
+          >
+            Close
+          </button>
         </div>
       </div>
-        <div class="text-center my-6">
-            <label for="event-{{event.id}}" class="inline-block text-white bg-gradient-to-r from-blue-600 to-blue-900 rounded-lg px-6 py-3 cursor-pointer">
-                View Details
-            </label>
-            <input type="checkbox" id="event-{{event.id}}" class="hidden peer" />
-            <div class="fixed inset-0 bg-black bg-opacity-70 hidden peer-checked:flex justify-center items-center z-50">
-                <div class="bg-white relative rounded-lg p-6 w-96 shadow-lg max-h-[80vh] overflow-y-auto">
-
-
-                   <label for="event-{{event.id}}" class="">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
-                      stroke-width="2" stroke="currentColor" class="size-8 cursor-pointer text-blue-700 w-10 h-10 rounded-full absolute right-4 top-4 hover:bg-blue-100">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                      </svg>
-                    </label>
-
-
-
-                    <h2 class="text-xl font-semibold mt-5 mb-4">{{event.name}}</h2>
-                    <p class="mb-4">{{ event.description }}</p>
-                    <p class="mb-4 font-medium text-start"> Participents</p>
-                    <div class="text-start">
-                    {% for participent in event.participants.all %}
-                      <li>{{participent.name}}</li>
-                    {% endfor %}
-                    </div>
-                     <div class="flex mt-3 gap-3">
-                      <div class="text-start"><p class="font-medium">Location</p><P>{{event.location}}</P></div>
-                      <div><p class="font-medium">Participent</p><p>{{event.total_participants}}</p></div>
-                    </div>
-
-                    <div class="flex mt-3 justify-between mb-4">
-                      <div class="text-start"><p class="font-medium">Date</p><P>{{event.date}}</P></div>
-                      <div><p class="font-medium">time</p><p>{{event.time}}</p></div>
-                    </div>
-                    <div class="flex justify-end gap-3">
-                        <form action="{% url 'update-event' event.id %}">
-                    <button type="submit">
-                        <span class="bg-blue-600 text-white rounded-xl px-3 py-1">Update</span>
-                    </button>
-                    </form>
-                    <form action="{% url 'delete-event' event.id %}" method="POST">
-                      {% csrf_token %}
-                        <button type="submit">
-                            <span class="bg-red-500 text-white rounded-xl px-3 py-1">Delete</span>
-                        </button>
-                    </form>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
-    {% endfor %}
-  </div>
+    <script>
+      function openModal(
+        id,
+        name,
+        desc,
+        date,
+        time,
+        location,
+        category,
+        attendees,
+        image,
+      ) {
+        document.getElementById("modalTitle").innerHTML = name;
+        document.getElementById("modalDesc").innerHTML = desc;
+        document.getElementById("modalCategory").innerHTML = category;
+        document.getElementById("modalDate").innerHTML = date;
+        document.getElementById("modalTime").innerHTML = time;
+        document.getElementById("modalLocation").innerHTML = location;
+        document.getElementById("modalAttendees").innerHTML =
+          attendees + " people";
+        if (image && image !== "None") {
+          document.getElementById("modalImage").src = image;
+          document.getElementById("modalImage").style.display = "block";
+        } else {
+          document.getElementById("modalImage").style.display = "none";
+        }
+        document.getElementById("eventModal").classList.remove("hidden");
+        document.getElementById("eventModal").classList.add("flex");
+      }
 
-  {% endblock home_content %}
-  
-</body>
+      function closeModal() {
+        document.getElementById("eventModal").classList.add("hidden");
+        document.getElementById("eventModal").classList.remove("flex");
+      }
+    </script>
+
+    {% endblock home_content %}
+  </body>
 </html>
